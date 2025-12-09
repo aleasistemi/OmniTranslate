@@ -6,7 +6,7 @@ interface VisualizerProps {
   color?: string;
 }
 
-export const Visualizer: React.FC<VisualizerProps> = ({ isActive, volume, color = '#3b82f6' }) => {
+export const Visualizer: React.FC<VisualizerProps> = ({ isActive, volume, color = '#EC1D24' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export const Visualizer: React.FC<VisualizerProps> = ({ isActive, volume, color 
         ctx.beginPath();
         ctx.moveTo(0, canvas.height / 2);
         ctx.lineTo(canvas.width, canvas.height / 2);
-        ctx.strokeStyle = '#334155';
+        ctx.strokeStyle = '#cbd5e1'; // Light slate for inactive state on white bg
         ctx.stroke();
         return;
       }
@@ -67,7 +67,7 @@ export const Visualizer: React.FC<VisualizerProps> = ({ isActive, volume, color 
       ref={canvasRef} 
       width={300} 
       height={100} 
-      className="w-full h-24 rounded-lg bg-slate-900/50 backdrop-blur-sm"
+      className="w-full h-24 rounded-lg bg-gray-50 border border-gray-200"
     />
   );
 };
