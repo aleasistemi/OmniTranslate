@@ -228,10 +228,10 @@ const App: React.FC = () => {
 
   // 3. Active Session Screen
   return (
-    <div className="min-h-screen bg-white flex flex-col font-sans">
+    <div className="h-screen bg-gray-50 flex flex-col font-sans overflow-hidden">
       
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-20">
+      <header className="bg-white border-b border-gray-200 flex-shrink-0 z-30">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
              <button onClick={handleStopSession} className="p-2 -ml-2 hover:bg-gray-100 rounded-full text-slate-500 transition-colors">
@@ -255,78 +255,83 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-5xl mx-auto w-full p-4 flex flex-col gap-4">
+      {/* Main Content Area */}
+      <main className="flex-1 w-full max-w-5xl mx-auto flex flex-col relative overflow-hidden">
         
-        {/* Status & Visualizer Card */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-           <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-4 text-sm text-slate-500">
+        {/* FIXED Visualizer & Status Area */}
+        <div className="flex-shrink-0 bg-white p-4 border-b border-gray-100 z-20 shadow-sm">
+           {/* Languages Display */}
+           <div className="flex items-center justify-between mb-4 bg-gray-50 rounded-xl p-3 border border-gray-100">
+              <div className="flex items-center gap-3 text-sm text-slate-900 font-semibold">
                  <div className="flex items-center gap-2">
-                   <Globe className="w-4 h-4 text-[#EC1D24]" />
-                   <span className="font-medium text-slate-900">{config.languageA}</span>
+                   <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-gray-200 text-[#EC1D24]">
+                      <span className="text-xs">A</span>
+                   </div>
+                   <span>{config.languageA}</span>
                  </div>
                  <ArrowRight className="w-4 h-4 text-gray-300" />
                  <div className="flex items-center gap-2">
-                   <Globe className="w-4 h-4 text-[#EC1D24]" />
-                   <span className="font-medium text-slate-900">{config.languageB}</span>
+                    <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center border border-gray-200 text-[#EC1D24]">
+                      <span className="text-xs">B</span>
+                   </div>
+                   <span>{config.languageB}</span>
                  </div>
               </div>
               
               <button 
                 onClick={toggleMute}
-                className={`p-3 rounded-full transition-all ${
+                className={`p-2 rounded-full transition-all ${
                   isMuted 
                     ? 'bg-red-50 text-red-500 hover:bg-red-100' 
-                    : 'bg-gray-100 text-slate-600 hover:bg-gray-200'
+                    : 'bg-white text-slate-600 hover:bg-gray-100 border border-gray-200'
                 }`}
               >
                 {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </button>
            </div>
 
+           {/* Audio Wave */}
            <Visualizer isActive={connectionState === 'connected' && !isMuted} volume={volume} color={ALEA_RED} />
+           
+           {/* Error Banner (Fixed if visible) */}
+           {errorMessage && (
+            <div className="mt-3 bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                <span>{errorMessage}</span>
+              </div>
+              <button onClick={handleRetry} className="text-xs bg-white border border-red-200 px-3 py-1 rounded hover:bg-red-50 font-semibold">
+                Retry
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Error Banner */}
-        {errorMessage && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
-              <span className="text-sm font-medium">{errorMessage}</span>
-            </div>
-            <button onClick={handleRetry} className="text-xs bg-white border border-red-200 px-3 py-1.5 rounded-lg hover:bg-red-50 font-semibold shadow-sm">
-              Retry
-            </button>
-          </div>
-        )}
+        {/* SCROLLABLE Chat Area */}
+        <div className="flex-1 overflow-y-auto p-4 relative bg-slate-50">
+           {/* Gradient Mask to fade top messages */}
+           <div className="fixed left-0 right-0 h-8 bg-gradient-to-b from-slate-50 to-transparent pointer-events-none z-10" style={{top: 'calc(16rem)'}}></div>
 
-        {/* Live Transcript Log */}
-        <div className="flex-1 bg-gray-50 border border-gray-200 rounded-2xl p-4 overflow-hidden flex flex-col min-h-[400px]">
-           <div className="flex items-center gap-2 mb-4 text-slate-400 text-xs font-semibold uppercase tracking-wider">
-             <MessageSquare className="w-3 h-3" /> Live Transcription
-           </div>
-           
-           <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+           <div className="space-y-4 pb-4 max-w-5xl mx-auto">
              {logs.length === 0 && (
-               <div className="h-full flex flex-col items-center justify-center text-slate-400 opacity-60">
-                 <Activity className="w-12 h-12 mb-2 text-[#EC1D24]" />
-                 <p>Waiting for speech...</p>
+               <div className="h-64 flex flex-col items-center justify-center text-slate-400 opacity-60">
+                 <MessageSquare className="w-12 h-12 mb-2 text-gray-300" />
+                 <p className="text-sm">Conversation will appear here...</p>
                </div>
              )}
              
              {logs.map((log) => (
-               <div key={log.id} className={`flex ${log.source === 'user' ? 'justify-end' : 'justify-start'}`}>
-                 <div className={`max-w-[80%] rounded-2xl px-5 py-3 shadow-sm ${
+               <div key={log.id} className={`flex flex-col ${log.source === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                 <div className={`max-w-[85%] rounded-2xl px-5 py-3 shadow-sm ${
                    log.source === 'user' 
                      ? 'bg-[#EC1D24] text-white rounded-br-none' 
                      : 'bg-white text-slate-800 border border-gray-200 rounded-bl-none'
                  }`}>
                    <p className="text-sm leading-relaxed">{log.text}</p>
-                   <p className={`text-[10px] mt-1 opacity-70 ${log.source === 'user' ? 'text-red-100' : 'text-slate-400'}`}>
-                     {log.timestamp.toLocaleTimeString()}
-                   </p>
                  </div>
+                 <span className={`text-[10px] mt-1 mx-1 font-medium ${log.source === 'user' ? 'text-slate-400' : 'text-slate-400'}`}>
+                   {log.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                 </span>
                </div>
              ))}
              <div ref={logsEndRef} />
