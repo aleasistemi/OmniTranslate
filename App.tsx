@@ -4,7 +4,7 @@ import { Language, SessionConfig, MessageLog } from './types';
 import { useLiveTranslator } from './hooks/useLiveTranslator';
 import { Visualizer } from './components/Visualizer';
 
-const PIN_CODE = "6841";
+const PIN_CODE = "1409";
 
 const App: React.FC = () => {
   // Authentication State
